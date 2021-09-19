@@ -1,0 +1,10 @@
+
+[+] as explained in the lecture notes, Dockerfile.dev was adjusted from its 
+    std form because of some permission issues with linux... in order to make
+    real-time adj to code and see it on the web-page without rebuilding.
+
+    Copied initial/std form of it here to: _std_Dockerfile.dev
+    [hope it doesn't mess up things...]
+
+    Dockerfile does not need that and is std.
+

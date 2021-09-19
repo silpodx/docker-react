@@ -1,0 +1,67 @@
+
+[+] tried with std Dockerfile.dev, but failed the volumes artefact, si found a
+    Q/A explaining the problem:
+
+------------------------------------------------------------------------------
+
+Bobby — Teaching AssistantAnswer
+6 months ago
+60
+60 upvotes
+
+There is an issue with permissions in regards to Linux hosts (which includes Windows WSL2) and volumes. It can be solved by doing the following:
+
+
+    FROM node:alpine
+
+    USER node
+
+    RUN mkdir -p /home/node/app
+    WORKDIR /home/node/app
+
+    COPY --chown=node:node ./package.json ./
+    RUN npm install
+    COPY --chown=node:node ./ ./
+
+    CMD ["npm", "start"]
+
+
+Remember to update the working directory paths in your docker run command to /home/node/app instead of just /app
+
+eg:
+
+docker run -it -p 3000:3000 -v /home/node/app/node_modules -v ~/my-project-directory:/home/node/app IMAGE_ID
+
+
+When we refactor to use Docker Compose, remember to update the working directory paths in your compose file:
+
+volumes:
+
+        volumes:
+          - /home/node/app/node_modules
+          - .:/home/node/app
+
+Explanation of changes:
+
+We are specifying that the USER which will execute RUN, CMD, or ENTRYPOINT instructions will be the node user, as opposed to root (default).
+
+https://docs.docker.com/engine/reference/builder/#user
+
+We are then creating a directory of /home/node/app prior to the WORKDIR instruction. This will prevent a permissions issue since WORKDIR by default will create a directory if it does not exist and set ownership to root.
+
+The inline chown commands will set ownership of the files you are copying from your local environment to the node user in the container.
+
+The end result will be that all files and directories in the project will no longer be owned by root and will instead be owned by the node user.
+
+
+The code above was taken from this thread:
+
+https://github.com/nodejs/docker-node/issues/740
+
+https://github.com/moby/moby/issues/36408
+
+Also, you can read up on the chown flag for the COPY instruction here:
+
+https://docs.docker.com/engine/reference/builder/#copy
+
+------------------------------------------------------------------------------
