@@ -1,5 +1,5 @@
 # Getting Started with Create React App
-## [ ignore, Udemy project interrupted... ]
+## [ ignore, Udemy project interrupted... (will remove from Github later [Apr 2025]) ]
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
